@@ -1,0 +1,16 @@
+{
+  "name": "log-streamer",
+  "version": "0.0.1",
+  "description": "Stream Logs to your browser",
+  "author": "Lawrence Carbon <lawrence.carbon@pressinnov.com>",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.13.3",
+    "socket.io": "^1.5.0",
+    "winston": "^2.2.0",
+    "mongodb": "^2.2.10"
+  }
+}

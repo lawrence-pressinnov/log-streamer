@@ -3,13 +3,28 @@ var http = require('http');
 var fs = require('fs');
 var socketio = require('socket.io');
 var logger = require('winston');
+var mongo = require('mongodb');
 
 var websocket;
 
-var mongoUri = "mongodb://localhost/local";
-var mongoCollection = "log";
-var serverPort = "8080";
+// var mongoUri = "mongodb://10.122.33.125/sie-logs";
+// var mongoCollection = "log";
+// var serverPort = "8080";
 
+var mongoUri = process.env.MONGO_URI;
+var mongoCollection = process.env.MONGO_COLLECTION;
+var serverPort = process.env.PORT;
+
+function checkParams(){
+
+  logger.info(process.env.MONGO_URI);  
+  logger.info(process.env.MONGO_COLLECTION);  
+  logger.info(process.env.PORT);  
+
+  if(process.env.MONGO_URI && process.env.MONGO_COLLECTION && process.env.PORT)
+    return true;
+
+}
 
 // subscriber function
 var subscribe = function(){  
@@ -20,7 +35,7 @@ var subscribe = function(){
   if('function' !== typeof next) throw('Callback function not defined');
 
  // connect to MongoDB
-  require('mongodb').MongoClient.connect(mongoUri, function(err, db){
+  mongo.MongoClient.connect(mongoUri, function(err, db){
 
    // make sure you have created capped collection "messages" on db "test"
     db.collection(mongoCollection, function(err, coll) {
@@ -49,13 +64,17 @@ var subscribe = function(){
   });     
 };
 
+if(!checkParams()){
+  process.exit(1);
+}
+
 // new documents will appear in the console
 subscribe( function(document) {
   if(websocket){
-    logger.debug(document);  
-    websocket.emit('message',document.gnin);
+    logger.info(document);  
+    websocket.emit('message',document);
   } else {
-    logger.debug("nobody is listening");
+    logger.info("nobody is listening");
   }
 });
 
