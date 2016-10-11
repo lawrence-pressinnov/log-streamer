@@ -2,21 +2,41 @@
 <html>
     <head>
         <meta charset="utf-8" />
-        <title>Socket.io</title>
+        <title>Log Streamer</title>
     </head>
  
     <body>
-        <h1>Communication avec socket.io !</h1>
 
+        <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.slim.min.js"></script>
         <script src="/socket.io/socket.io.js"></script>
         <script>
-            var socket = io.connect('http://192.168.99.100:8080');
+        $(document).ready(function() {
+            var socketUrl = window.location.origin; 
+            var socket = io.connect(socketUrl);
 
             socket.on('message', function(message) {
-                console.log(message.level + ' ' + message.timestamp + ' ' + message.message);
+                $("#log_roller").append('<div>' + message.level + ' ' + message.timestamp + ' ' + message.message + '</div>');
+                //console.log(message.level + ' ' + message.timestamp + ' ' + message.message);
+                $("#log_roller").scrollTop($("#log_roller")[0].scrollHeight);
             })
 
+            $("#submit").click(function(){
+                var q = $("#query").val();
+                socket.emit('filter',q);
+                console.log("emit:" + q);
+            });
+        });
 
         </script>
+
+        <div id="main">
+            <div id="log_roller" style="height:92vh;overflow: scroll;">
+                
+            </div>
+            <div id="commands" style="height:8vh">
+                <input type="text" name="query" id="query"/>
+                <button id="submit" name="submit" text="filter">Filter</button>
+            </div>
+        </div>
     </body>
 </html>
